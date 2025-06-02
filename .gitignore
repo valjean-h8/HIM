@@ -9,3 +9,5 @@ tmp/
 # Исключить данные БД
 prometheus/data/
 grafana/data/
+
+venv/
