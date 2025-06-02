@@ -15,33 +15,33 @@ groups:
         expr: >
           100 - (avg by(instance) 
           (irate(node_cpu_seconds_total{mode="idle"}[5m]))) 
-          * 100 > 85
+          * 100 > 50
         for: 5m
         labels:
           severity: warning
         annotations:
           summary: "High CPU on {{ $labels.instance }}"
-          description: "CPU >85% for 5m"
+          description: "CPU >50% for 5m"
 
       - alert: LowMemory
         expr: >
           (node_memory_MemAvailable_bytes / 
-          node_memory_MemTotal_bytes) * 100 < 10
+          node_memory_MemTotal_bytes) * 100 < 30
         for: 5m
         labels:
           severity: warning
         annotations:
           summary: "Low memory on {{ $labels.instance }}"
-          description: "Available memory <10%"
+          description: "Available memory <30%"
 
       - alert: LowDiskSpace
         expr: >
           (node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"} / 
           node_filesystem_size_bytes{mountpoint="/",fstype!="tmpfs"}) 
-          * 100 < 15
+          * 100 < 40
         for: 10m
         labels:
           severity: warning
         annotations:
           summary: "Low disk space on {{ $labels.instance }}"
-          description: "Disk space <15% free"
+          description: "Disk space <40% free"
