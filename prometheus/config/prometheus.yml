@@ -1,7 +1,28 @@
 global:
   scrape_interval: 15s
+  evaluation_interval: 15s
 
+# Правила алертов
+rule_files:
+  - "alert.rules.yml"
+
+# Конфигурация алертинга
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+# Сбор метрик
 scrape_configs:
-  - job_name: "prometheus"
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ["localhost:9090"]
+      - targets: ['localhost:9090']
+
+  - job_name: 'node'
+    static_configs:
+      - targets: ['192.168.0.132:9100', '192.168.0.154:9100'] # Замените на IP ваших устройств
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '(.*):9100'
+        target_label: 'instance'
+        replacement: '$1'

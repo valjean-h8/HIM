@@ -1,0 +1,47 @@
+---
+groups:
+  - name: host_alerts
+    rules:
+      - alert: HostDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Host {{ $labels.instance }} down"
+          description: "{{ $labels.instance }} down for >1m"
+
+      - alert: HighCPU
+        expr: >
+          100 - (avg by(instance) 
+          (irate(node_cpu_seconds_total{mode="idle"}[5m]))) 
+          * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU on {{ $labels.instance }}"
+          description: "CPU >85% for 5m"
+
+      - alert: LowMemory
+        expr: >
+          (node_memory_MemAvailable_bytes / 
+          node_memory_MemTotal_bytes) * 100 < 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low memory on {{ $labels.instance }}"
+          description: "Available memory <10%"
+
+      - alert: LowDiskSpace
+        expr: >
+          (node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"} / 
+          node_filesystem_size_bytes{mountpoint="/",fstype!="tmpfs"}) 
+          * 100 < 15
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk space <15% free"

@@ -1,5 +1,18 @@
 route:
-  receiver: "null"
+  group_by: ['alertname', 'instance']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+  receiver: 'telegram'
 
 receivers:
-  - name: "null"
+- name: 'telegram'
+  telegram_configs:
+  - api_url: 'https://api.telegram.org'
+    bot_token: 7781749823:AAFcScZry074qYBnU5khGqT5hKukJ-glHSQ  # Замените на реальный токен
+    chat_id: 701536605        # Замените на реальный ID чата
+    message: '{{ range .Alerts }}[{{ .Status }}] {{ .Labels.severity | upper }}: {{ .Annotations.summary }}
+      Instance: {{ .Labels.instance }}
+      {{ .Annotations.description }}
+      {{ end }}'
+    send_resolved: true

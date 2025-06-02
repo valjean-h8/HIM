@@ -4,6 +4,7 @@ services:
   prometheus:
     image: prom/prometheus:${PROMETHEUS_VERSION:-v2.47.1}  # значение по умолчанию
     container_name: prometheus
+    dns: 8.8.8.8  # Добавляем публичный DNS
     volumes:
       - ./prometheus/config:/etc/prometheus
     ports:
@@ -11,11 +12,25 @@ services:
     networks:
       - monitoring-net  # фиксированное имя
 
+  alertmanager:
+    image: prom/alertmanager:${ALERTMANAGER_VERSION:-v0.26.0}
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager/config:/etc/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - monitoring-net
+    depends_on:
+      - prometheus
+
   grafana:
     image: grafana/grafana:${GRAFANA_VERSION:-10.1.1}  # значение по умолчанию
     container_name: grafana
+    dns: 8.8.8.8  # Добавляем публичный DNS
     volumes:
-      - ../grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     ports:
       - "3000:3000"
     networks:
