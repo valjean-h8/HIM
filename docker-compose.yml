@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION:-v2.47.1}  # значение по умолчанию
+    container_name: prometheus
+    volumes:
+      - ./prometheus/config:/etc/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring-net  # фиксированное имя
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION:-10.1.1}  # значение по умолчанию
+    container_name: grafana
+    volumes:
+      - ../grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring-net  # фиксированное имя
+    depends_on:
+      - prometheus
+
+networks:
+  monitoring-net:  # фиксированное имя
+    external: true  # используем существующую сеть
