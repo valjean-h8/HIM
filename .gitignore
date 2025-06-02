@@ -1,0 +1,11 @@
+# Исключить конфиденциальные данные
+**/secrets.env
+**/*_token
+
+# Исключить временные файлы
+.DS_Store
+tmp/
+
+# Исключить данные БД
+prometheus/data/
+grafana/data/
